@@ -67,6 +67,10 @@ public class SimpleList implements List {
         if(head == null) {
             add(element);
         }
+        else if(index == 0) {
+            head = new SimpleNode(element, head);
+            size++;
+        }
         else {
             SimpleNode cur = head;
             for(int i = 0; i < index - 1; i++) {
@@ -94,8 +98,11 @@ public class SimpleList implements List {
      */
     @Override
     public Object get(int index) {
-        // TODO: Implement interface method get
-        throw new RuntimeException("Not yet implemented");
+        SimpleNode cur = head;
+        for(int i = 0; i < index; i++) {
+            cur = cur._next;
+        }
+        return cur._data;
     }
     
     /**
@@ -105,8 +112,21 @@ public class SimpleList implements List {
      */
     @Override
     public Object remove(int index) {
-        // TODO: Implement interface method remove
-        throw new RuntimeException("Not yet implemented");
+        SimpleNode removed;
+        if(index == 0) {
+            removed = head;
+            head = head._next;
+            size--;
+            return removed._data;
+        }
+        SimpleNode cur = head;
+        for(int i = 0; i < index - 1; i++) {
+            cur = cur._next;
+        }
+        removed = cur._next;
+        cur._next = cur._next._next;
+        size--;
+        return removed._data;
     }
 
     /**
@@ -118,8 +138,13 @@ public class SimpleList implements List {
      */
     @Override
     public Object set(int index, Object element) {
-        // TODO: Implement interface method set
-        throw new RuntimeException("Not yet implemented");
+        SimpleNode cur = head;
+        for(int i = 0; i < index; i++) {
+            cur = cur._next;
+        }
+        Object data = cur._data;
+        cur._data = element;
+        return data;
     }
 
     /**
@@ -139,7 +164,14 @@ public class SimpleList implements List {
     // #region: Overrides not supported by the SimpleList
     @Override
     public boolean contains(Object o) {
-        throw new UnsupportedOperationException();
+        SimpleNode cur = head;
+        while(cur != null) {
+            if(cur._data.equals(o)) {
+                return true;
+            }
+            cur = cur._next;
+        }
+        return false;
     }
 
     @Override
@@ -149,27 +181,66 @@ public class SimpleList implements List {
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException();
+        Object[] arr = new Object[size];
+        SimpleNode cur = head;
+        for(int i = 0; i < size; i++) {
+            arr[i] = cur._data;
+            cur = cur._next;
+        }
+        return arr;
     }
 
     @Override
     public Object[] toArray(Object[] a) {
-        throw new UnsupportedOperationException();
+        SimpleNode cur = head;
+        for(int i = 0; i < a.length; i++) {
+            if(cur == null) {
+                a[i] = null;
+            }
+            else {
+                a[i] = cur._data;
+                cur = cur._next;
+            }
+        }
+        return a;
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
+        SimpleNode cur = head;
+        while(cur._next != null) {
+            if(cur._next._data.equals(o)) {
+                cur._next = cur._next._next;
+                size--;
+                return true;
+            }
+            cur = cur._next;
+        }
+        return false;
     }
 
     @Override
     public boolean containsAll(Collection c) {
-        throw new UnsupportedOperationException();
+        Iterator iterator = c.iterator();
+        while(iterator.hasNext()) {
+            Object element = iterator.next();
+            if(!contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection c) {
-        throw new UnsupportedOperationException();
+        boolean changed = false;
+        Iterator iterator = c.iterator();
+        while(iterator.hasNext()) {
+            Object element = iterator.next();
+            add(element);
+            changed = true;
+        }
+        return changed;
     }
 
     @Override
